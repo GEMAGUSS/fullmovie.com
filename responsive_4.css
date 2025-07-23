@@ -1,0 +1,60 @@
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 15px;
+  }
+
+  .logo {
+    font-size: 1.2em;
+  }
+
+  .nav-icons .icon {
+    font-size: 1.1em;
+    margin-left: 10px;
+  }
+
+  .channel {
+    padding: 15px;
+    font-size: 1em;
+  }
+
+  .video-card {
+    margin-bottom: 15px;
+  }
+
+  .video-info {
+    padding: 12px;
+  }
+
+  .video-info h3 {
+    font-size: 0.95em;
+  }
+
+  .video-info p {
+    font-size: 0.85em;
+  }
+
+  .timestamp {
+    font-size: 0.75em;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 1em;
+  }
+
+  .nav-icons .icon {
+    font-size: 1em;
+    margin-left: 8px;
+  }
+
+  .video-info h3 {
+    font-size: 0.9em;
+  }
+
+  .video-info p {
+    font-size: 0.8em;
+  }
+}
