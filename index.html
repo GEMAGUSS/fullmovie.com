@@ -50,18 +50,24 @@
 						</header>
 						<!-- 2 Column Video Section -->
 							<div class="flex flex-2">
+								<!-- Contoh: pemutar YouTube yang lebih robust -->
 								<div class="video col">
 									<div class="image fit">
-										<img src="images/icon1.webp" alt="">
-										<div class="arrow">
-											<div class="icon fa-play"></div>
+										<!-- Thumbnail / placeholder; data-id = YouTube VIDEO ID -->
+										<div class="youtube-player" data-id="VIDEO_ID" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">
+											<!-- Thumbnail akan diganti oleh JS menjadi iframe, atau menjadi tombol fallback di FB in-app -->
+											<img src="images/icon1.webp" alt="" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;">
+											<div class="arrow" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);">
+												<div class="icon fa-play"></div>
+											</div>
 										</div>
 									</div>
 									<p class="caption">
 										full movie 
 									</p>
-									<a href="Page7.html" class="link"><span>Click</span></a>
+									<a href="#" class="link youtube-open" data-id="VIDEO_ID"><span>Click</span></a>
 								</div>
+
 								<div class="video col">
 									<div class="image fit">
 										<img src="images/pic2.webp" alt="">
@@ -380,6 +386,88 @@
 			<script src="assets/js/skel.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+
+		<!-- YouTube embed helper + FB webview detection -->
+		<script>
+		(function(){
+			// Deteksi Facebook in-app browser (iOS/Android)
+			function isFacebookInApp() {
+				var ua = navigator.userAgent || '';
+				return /FBAN|FBAV|FB_IAB|FB4A|FBAV/i.test(ua);
+			}
+
+			// Ganti placeholder menjadi iframe bila bukan FB in-app
+			function setupYouTube() {
+				var players = document.querySelectorAll('.youtube-player');
+				players.forEach(function(el){
+					var id = el.getAttribute('data-id');
+					if(!id) return;
+
+					// Jika sedang di Facebook in-app, jangan embed iframe otomatis.
+					if(isFacebookInApp()){
+						// Tampilkan tombol untuk membuka di tab/YouTube app
+						el.innerHTML = '';
+						var btn = document.createElement('button');
+						btn.textContent = 'Buka video di YouTube';
+						btn.style.position = 'absolute';
+						btn.style.left = '50%';
+						btn.style.top = '50%';
+						btn.style.transform = 'translate(-50%,-50%)';
+						btn.style.zIndex = 10;
+						btn.onclick = function(){
+							var url = 'https://youtu.be/' + id;
+							// buka di tab baru — sebagian webview akan menawarkan "Open in browser"
+							window.open(url, '_blank');
+						};
+						el.appendChild(btn);
+						return;
+					}
+
+					// Normal: buat iframe yang aman (youtube-nocookie)
+					var iframe = document.createElement('iframe');
+					iframe.setAttribute('src', 'https://www.youtube-nocookie.com/embed/' + id + '?rel=0&playsinline=1');
+					iframe.setAttribute('frameborder', '0');
+					iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+					iframe.setAttribute('allowfullscreen', '');
+					iframe.style.position = 'absolute';
+					iframe.style.top = 0;
+					iframe.style.left = 0;
+					iframe.style.width = '100%';
+					iframe.style.height = '100%';
+					iframe.loading = 'lazy';
+					el.innerHTML = '';
+					el.appendChild(iframe);
+				});
+
+				// Pastikan link juga membuka fallback di luar bila FB in-app
+				var links = document.querySelectorAll('.youtube-open');
+				links.forEach(function(a){
+					a.addEventListener('click', function(e){
+						e.preventDefault();
+						var id = a.getAttribute('data-id');
+						if(!id) return;
+						var direct = 'https://youtu.be/' + id;
+						if(isFacebookInApp()){
+							window.open(direct, '_blank');
+						} else {
+							// Jika bukan FB in-app, kita bisa membuka lightbox/scroll ke player; di sini kita scroll ke player
+							var player = document.querySelector('.youtube-player[data-id="' + id + '"]');
+							if(player){
+								player.scrollIntoView({behavior:'smooth', block:'center'});
+							}
+						}
+					});
+				});
+			}
+
+			// Jalankan setelah DOM siap
+			if(document.readyState === 'loading'){
+				document.addEventListener('DOMContentLoaded', setupYouTube);
+			} else {
+				setupYouTube();
+			}
+		})();
+		</script>
 
 	</body>
 </html>
